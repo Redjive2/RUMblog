@@ -52,7 +52,7 @@ for (const [postname, _, desc] of index) {
 
     const idx = i
     anchor.addEventListener('click', () => {
-        window.location.href = 'home.htm?id=' + String(idx)
+        window.location.href = '/?id=' + String(idx)
     })
 
     top.append(postEl, dateEl)

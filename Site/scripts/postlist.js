@@ -15,7 +15,7 @@ for (const line of names) {
 
 // 'click' on <option> never fires in WebKit — on iOS the select is a native picker
 select.addEventListener('change', () => {
-    window.location.href = `home.htm?id=${names.indexOf(select.value)}`
+    window.location.href = `/?id=${names.indexOf(select.value)}`
 })
 
 return select

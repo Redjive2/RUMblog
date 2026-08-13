@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"io/fs"
 	"log"
 	"net/http"
 	"os"
@@ -10,11 +11,11 @@ import (
 )
 
 func main() {
-	fs := os.DirFS("../Site")
+	fsys := os.DirFS("../Site")
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var (
 			path      = r.URL.Path
-			file, err = fs.Open(path[1:])
+			file, err = open(fsys, path)
 		)
 
 		if err != nil {
@@ -48,4 +49,12 @@ func main() {
 
 	err := http.ListenAndServe(":8080", handler)
 	panic(err)
+}
+
+func open(fsys fs.FS, path string) (fs.File, error) {
+	if path == "/" {
+		return fsys.Open("/index.html")
+	}
+	
+	return fsys.Open(path[1:])
 }
