@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang=en>
+    <head>
+        <meta charset=utf-8>
+        <meta name=viewport content='width=device-width, initial-scale=1' />
+        <meta name=color-scheme content='light dark' />
+        <link rel="stylesheet" href="styles/pico.sand.css">
+        <link rel=stylesheet href=styles/main.css />
+        <script type=module src=scripts/hydrate.js defer></script>
+        <title>RUMblog</title>
+    </head>
+    <body>
+        <div blocker></div>
+        <header>
+            <page @=pages/nav.htm />
+        </header>
+        <main class=container-fluid>
+            <compute @=scripts/init-home.js />
+        </main>
+        <footer>
+            <page @=pages/links.htm />
+        </footer>
+    </body>
+</html>
