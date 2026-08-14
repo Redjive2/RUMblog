@@ -1,6 +1,9 @@
 const resp = await fetch('posts/index.lines'),
     text = await resp.text(),
-    names = text.split('\n').map(l => l.split(", ")[0]),
+    names = text
+        .split('\n')
+        .filter(l => !l.startsWith('~~'))
+        .map(l => l.split(", ")[0]),
     select = document.createElement('select'),
     dp = new DOMParser()
 
