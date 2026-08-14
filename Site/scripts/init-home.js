@@ -1,22 +1,4 @@
-async function getLatestInfo(postname) {
-    const resp = await fetch('posts/index.lines'),
-        text = await resp.text(),
-        names = text
-            .split('\n')
-            .filter(l => !l.startsWith('~~'))
-            .map(l => l.split(", ")[0]),
-        dates = text
-            .split('\n')
-            .filter(l => !l.startsWith('~~'))
-            .map(l => l.split(", ")[1]),
-        date = dates[names.indexOf(postname)]
 
-    if (names[names.length - 1] == postname) {
-        return `<em muteder>${date} (latest)</em>`
-    }
-
-    return `<em muteder>${date}</em>`
-}
 
 const resp = await fetch('posts/index.lines'),
     text = await resp.text(),
@@ -48,7 +30,7 @@ for (const [postname, _, desc] of index) {
         bottom = document.createElement('em'),
         postEl = document.createElement('h1'),
         anchor = document.createElement('a'),
-        dateEl = dp.parseFromString(await getLatestInfo(postname), 'text/html').body.children.item(0)
+        dateEl = dp.parseFromString(`<em muteder>${indexDateInfo(postname)}</em>`, 'text/html').body.children.item(0)
 
     
     top.role = 'group'

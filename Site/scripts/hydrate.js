@@ -1,16 +1,8 @@
 const dp = new DOMParser(),
-    obs = new window.MutationObserver(hydrate),
-    MARK = 'data-colored',
-    rules = [
-        ['RUMBLE', s => {
-            const strong = document.createElement('strong')
-            strong.style.color = 'rgb(182, 155, 107)'
-            strong.innerHTML = '<em>' + s + '</em>'
-            return strong
-        }]
-    ]
+    obs = new window.MutationObserver(hydrate)
 
-let pending = 0
+let pending = 0,
+    firstRun = true
 
 function checkDone() {
     if (pending > 0 || document.querySelector('page:not([handled]), compute:not([handled])')) {
@@ -21,17 +13,34 @@ function checkDone() {
 }
 
 obs.observe(document.body, { childList: true, subtree: true })
-function hydrate() {
-    for (const [str, transform] of rules) {
-        try {
-            color(document.body, str, transform)
-        } catch (e) {
-            console.error('rule failed:', str, e)
+async function hydrate() {
+    const targets = []
+    
+    document.querySelectorAll('page:not([handled]), compute:not([handled])').forEach(link => {
+        // claim synchronously — a nested hydrate() triggered during a later await
+        // would otherwise re-collect anything this loop hasn't started yet
+        link.setAttribute('handled', 'true')
+
+        if (link.nodeName == 'PAGE') {
+            targets.push(resolvePage.bind(this, link))
+        } else {
+            targets.push(resolveCompute.bind(this, link))
         }
+    })
+
+    for (const target of targets) {
+        if (firstRun) {
+            await target()
+            continue
+        }
+
+        target()
     }
 
-    document.querySelectorAll('page:not([handled])').forEach(async link => {
-        link.setAttribute('handled', 'true')
+    firstRun = false
+
+    async function resolvePage(link) {
+        link.setAttribute('hidden', true)
         pending++
 
         try {
@@ -60,10 +69,12 @@ function hydrate() {
             pending--
             queueMicrotask(checkDone)
         }
-    })
+    }
 
-    document.querySelectorAll('compute:not([handled])').forEach(async link => {
-        link.setAttribute('handled', 'true')
+    async function resolveCompute(link) {
+        console.warn(link.getAttribute('@'))
+        
+        link.setAttribute('hidden', true)
         pending++
 
         try {
@@ -84,17 +95,25 @@ function hydrate() {
                 host[attr.name] ??= attr.value
             }
 
+            host.append(...link.childNodes)
+            host.observer = new MutationObserver(f)
+            host.sourceParent = link.parentNode
+
             const result = await f()
 
-            result.setAttribute('fade-in', '')
-            link.after(result)
+            if (result != undefined) {
+                result.setAttribute('fade-in', '')
+                link.after(result)
+            }
+
             link.remove()
         } finally {
             pending--
             queueMicrotask(checkDone)
         }
-    })
+    }
 }
+
 hydrate()
 
 function wrapFunction(code, container) {
@@ -117,37 +136,5 @@ function wrapFunction(code, container) {
             `
             return failure
         }
-    }
-}
-
-function color(root, str, transform) {
-    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
-        acceptNode: node =>
-            node.data.includes(str) &&
-            !node.parentElement?.closest(`script, style, option, [${MARK}]`)
-                ? NodeFilter.FILTER_ACCEPT
-                : NodeFilter.FILTER_REJECT,
-    })
-
-    // collect before mutation; editing during the walk invalidates
-    const targets = []
-    while (walker.nextNode()) targets.push(walker.currentNode)
-
-    for (const target of targets) {
-        const frag = document.createDocumentFragment()
-
-        target.data.split(str).forEach((part, i) => {
-            if (i > 0) {
-                const result = transform(str)
-                result.setAttribute(MARK, str) // name is constant; str is just data
-                frag.append(result)
-            }
-
-            if (part) {
-                frag.append(part)
-            }
-        })
-
-        target.replaceWith(frag)
     }
 }

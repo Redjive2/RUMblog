@@ -22,6 +22,10 @@ func main() {
 			panic(err)
 		}
 
+		if path == "/" {
+			path = "/index.html"
+		}
+
 		defer file.Close()
 
 		bytes, err := io.ReadAll(file)
@@ -53,8 +57,8 @@ func main() {
 
 func open(fsys fs.FS, path string) (fs.File, error) {
 	if path == "/" {
-		return fsys.Open("/index.html")
+		return fsys.Open("index.html")
 	}
-	
+
 	return fsys.Open(path[1:])
 }

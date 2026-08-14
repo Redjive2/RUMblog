@@ -1,23 +1,3 @@
-async function getLatestInfo(postname) {
-    const resp = await fetch('posts/index.lines'),
-        text = await resp.text(),
-        names = text
-            .split('\n')
-            .filter(l => !l.startsWith('~~'))
-            .map(l => l.split(", ")[0]),
-        dates = text
-            .split('\n')
-            .filter(l => !l.startsWith('~~'))
-            .map(l => l.split(", ")[1]),
-        date = dates[names.indexOf(postname)]
-
-    if (names[names.length - 1] == postname) {
-        return `<em muteder>: ${date} (latest)</em>`
-    }
-
-    return `<em muteder>: ${date}</em>`
-}
-
 const markdown = await import('https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js'),
     dp = new DOMParser(),
     resp = await fetch('posts/' + this.post + '.md'),
@@ -28,7 +8,7 @@ const markdown = await import('https://cdn.jsdelivr.net/npm/marked/lib/marked.es
     subpaths = this.post.split('/'),
     lastSubpath = subpaths[subpaths.length - 1],
     postname = lastSubpath.split('.')[0],
-    note = await getLatestInfo(postname),
+    note = `<em muteder>: ${indexDateInfo(postname)}</em>`,
     header = dp.parseFromString(`<page @=pages/header.htm note='${note}' title='${postname}' />`, 'text/html').body.children.item(0)
 
 article.append(header, ...contents.body.children)

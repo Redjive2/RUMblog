@@ -1,9 +1,4 @@
-const resp = await fetch('posts/index.lines'),
-    text = await resp.text(),
-    names = text
-        .split('\n')
-        .filter(l => !l.startsWith('~~'))
-        .map(l => l.split(", ")[0]),
+const posts = index.filter(post => !post.hidden)
     select = document.createElement('select'),
     dp = new DOMParser()
 
@@ -12,13 +7,12 @@ select.name = 'Posts'
 select.required = false
 select.append(dp.parseFromString(`<option disabled>Posts</option>`, 'text/html').body.children.item(0))
 
-for (const line of names) {
-    select.append(dp.parseFromString(`<option>${line}</option>`, 'text/html').body.children.item(0))
+for (const postname of posts.map(post => post.name)) {
+    select.append(dp.parseFromString(`<option>${postname}</option>`, 'text/html').body.children.item(0))
 }
 
-// 'click' on <option> never fires in WebKit — on iOS the select is a native picker
 select.addEventListener('change', () => {
-    window.location.href = `/?id=${names.indexOf(select.value)}`
+    window.location.href = `/?id=${posts.findIndex(post => post.name == select.value).id}`
 })
 
 return select
