@@ -37,9 +37,9 @@ If a match lasts longer than two minutes, it immediately enters sudden death.
 ### Shiftstones
 
 Each fighter may choose one primary shiftstone and either one or two secondary shiftstones.
-- The primary shiftstones are charge, volatile, and flow.
+- The primary shiftstones are stubborn\*, charge, volatile, and flow.
 - The secondary shiftstones are guard, adamant, surge, and vigor.
-- A fighter can also choose to use stubborn, but cannot choose a secondary stone if so.
+- \*A fighter using stubborn *cannot* choose a secondary stone.
 
 Fighters may choose to change one shiftstone after losing a set. They may not do so at any other time, and may not change both at once.
 - Should a fighter choose to swap from stubborn to another stone, they may replace it with both a primary and a secondary stone.
