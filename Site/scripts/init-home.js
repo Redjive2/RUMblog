@@ -20,7 +20,10 @@ async function getLatestInfo(postname) {
 
 const resp = await fetch('posts/index.lines'),
     text = await resp.text(),
-    index = text.split('\n').map(l => l.split(", ")),
+    index = text
+        .split('\n')
+        .filter(l => !l.startsWith('~~'))
+        .map(l => l.split(", ")),
     dp = new DOMParser()
 
 if (window.location.href.includes("?id=")) {
