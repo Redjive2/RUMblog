@@ -11,7 +11,7 @@ async function getLatestInfo(postname) {
             .map(l => l.split(", ")[1]),
         date = dates[names.indexOf(postname)]
 
-    if (names[names.length - 1] == name) {
+    if (names[names.length - 1] == postname) {
         return `<em muteder>${date} (latest)</em>`
     }
 
