@@ -42,7 +42,7 @@ Each fighter may choose one primary shiftstone and either one or two secondary s
 - \**A fighter using stubborn **may not** choose a secondary stone*.
 
 Fighters may choose to change one shiftstone after losing a set. They may not do so at any other time, and may not change both at once.
-- Should a fighter choose to swap from stubborn to another stone, they may replace it with both a primary and a secondary stone.
+- Should a fighter choose to swap from stubborn to another stone, they may only choose one primary or secondary shiftstone.
 - Should a fighter choose to swap to stubborn, they must remove whichever stone they did not replace.
 
 ### Bounties
