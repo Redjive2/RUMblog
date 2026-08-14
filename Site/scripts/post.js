@@ -1,11 +1,17 @@
 async function getLatestInfo(postname) {
     const resp = await fetch('posts/index.lines'),
         text = await resp.text(),
-        names = text.split('\n').map(l => l.split(", ")[0]),
-        dates = text.split('\n').map(l => l.split(", ")[1]),
+        names = text
+            .split('\n')
+            .filter(l => !l.startsWith('~~'))
+            .map(l => l.split(", ")[0]),
+        dates = text
+            .split('\n')
+            .filter(l => !l.startsWith('~~'))
+            .map(l => l.split(", ")[1]),
         date = dates[names.indexOf(postname)]
 
-    if (names[0] == postname) {
+    if (names[names.length - 1] == postname) {
         return `<em muteder>: ${date} (latest)</em>`
     }
 
