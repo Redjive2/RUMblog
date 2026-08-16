@@ -2,7 +2,6 @@
     <compute @=scripts/rule.js target=MiniSET root>
         <strong style='color: rgb(178, 108, 118);'><em>MiniSET</em></strong>
     </compute>
-    </>
 </div>
 
 ## Overview
@@ -25,7 +24,7 @@ Matches are played in three sets. Rounds are won by knocking your opponent out o
 - Sets are not used for scoring in MiniSET.
 - Players are awarded one point for every round they win.
 
-If a match lasts longer than two minutes, it immediately enters sudden death.
+If a round lasts longer than two minutes, it immediately enters sudden death.
 - In sudden death, bounties cannot be claimed (see [Bounties](#bounties)).
 - The first fighter to get hit loses, regardless of remaining health.
 - Ringouts remain immediate losses.
@@ -51,26 +50,26 @@ It is possible to obtain additional points with bounties, of which five are chos
 - **Structure Restrictions**
   - Win a round without using wall.
   - Win a round without using disc.
-  - Win a round without using cube.
+  - Win a round without using cube. (This is worth 2 points.)
   - Win a round without using ball.
 - **Modifier Restrictions**
   - Win a round without using kick or stomp.
   - Win a round without using hold.
   - Win a round without using explode.
   - Win a round without using uppercut.
-  - Win a round without using dash or jump.
+  - Win a round without using dash or jump. (This is worth 2 points.)
 - **Finishers**
   - Win a round with a pillar.
   - Win a round with a flicked pillar, cube, or wall.
   - Win a round with a flicked or held disc.
   - Win a round with a grounded disc.
-  - Win a round with a guardTS, charge battery (on a structure other than disc), or volatile trap/ricochet.
+  - Win a round with a guardTS, charge battery (on a structure other than disc), or volatile trap/ricochet. (This is worth 2 points.)
 - **Special Moves**
-  - Hit your opponent with a railgun.
-  - Hit your opponent with an ascension (partial, full, or with hold count)
-  - Hit your opponent with a baby jail.
+  - Hit your opponent with a railgun. (This is worth 2 points.)
+  - Hit your opponent with an ascension (partial, full, or with hold count.) 
+  - Hit your opponent with a baby jail. (This is worth 2 points.)
   - Hit your opponent with a chambered combo.
-  - Hit your opponent with a car.
+  - Hit your opponent with a car. (This is worth 4 points.)
   - Hit your opponent with a multistructure bump or mount.
   - Hit your opponent with a structure lock.
   - Parry, RTS, or ground a speed disc from your opponent.

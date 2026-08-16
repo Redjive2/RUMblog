@@ -1,18 +1,30 @@
-const posts = index.filter(post => !post.hidden)
+const posts = index.filter(post => params.get('index') == 'hidden'
+        ? post.hidden
+        : !post.hidden
+    ),
     select = document.createElement('select'),
     dp = new DOMParser()
 
 select.dir = 'ltr'
 select.name = 'Posts'
 select.required = false
-select.append(dp.parseFromString(`<option disabled>Posts</option>`, 'text/html').body.children.item(0))
+select.append(dp.parseFromString(`<option value='HOME'>Posts</option>`, 'text/html').body.children.item(0))
 
-for (const postname of posts.map(post => post.name)) {
-    select.append(dp.parseFromString(`<option>${postname}</option>`, 'text/html').body.children.item(0))
+for (const post of posts) {
+    select.append(dp.parseFromString(`<option value='${post.id}'>${post.name}</option>`, 'text/html').body.children.item(0))
 }
 
+let value = params.get('id') ?? 'HOME'
+select.setAttribute('value', value)
+select.value = value
+
 select.addEventListener('change', () => {
-    window.location.href = `/?id=${posts.findIndex(post => post.name == select.value).id}`
+    if (select.value == 'HOME') {
+        redirect('/')
+        return
+    }
+
+    redirect(`/?id=${select.value}`)
 })
 
 return select

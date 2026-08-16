@@ -5,6 +5,7 @@ const resp = await fetch('posts/index.lines'),
     rawData = text.split('\n')
 
 data = rawData
+    .filter(line => !line.startsWith('##'))
     .map(line => line.split(', '))
     .map((row, index) => [index, ...row])
     .map(row => ({

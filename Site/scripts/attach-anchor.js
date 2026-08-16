@@ -1,0 +1,1 @@
+document.querySelector('a[home]').addEventListener('click', () => redirect('/'))

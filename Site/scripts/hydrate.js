@@ -14,8 +14,13 @@ function checkDone() {
 
 obs.observe(document.body, { childList: true, subtree: true })
 async function hydrate() {
+    // claim the flag up front — a nested hydrate() with an empty target list
+    // would otherwise clear it and drop this run out of sequential mode
+    const isFirstRun = firstRun
+    firstRun = false
+
     const targets = []
-    
+
     document.querySelectorAll('page:not([handled]), compute:not([handled])').forEach(link => {
         // claim synchronously — a nested hydrate() triggered during a later await
         // would otherwise re-collect anything this loop hasn't started yet
@@ -29,15 +34,13 @@ async function hydrate() {
     })
 
     for (const target of targets) {
-        if (firstRun) {
+        if (isFirstRun) {
             await target()
             continue
         }
 
         target()
     }
-
-    firstRun = false
 
     async function resolvePage(link) {
         link.setAttribute('hidden', true)
@@ -73,7 +76,7 @@ async function hydrate() {
 
     async function resolveCompute(link) {
         console.warn(link.getAttribute('@'))
-        
+
         link.setAttribute('hidden', true)
         pending++
 

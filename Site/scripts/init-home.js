@@ -1,36 +1,37 @@
+const dp = new DOMParser(),
+    id = params.get('id'),
+    post = index.find(post => post.id == id)
 
+if (params.has('id')) {
+    if (params.get('index') == 'hidden' && !post.hidden) {
+        throw new Error(`Cannot find hidden document where id = ${id}.`)
+    } else if (params.get('index') != 'hidden' && post.hidden) {
+        throw new Error(`Cannot find document where id = ${id}.`)
+    }
 
-const resp = await fetch('posts/index.lines'),
-    text = await resp.text(),
-    index = text
-        .split('\n')
-        .filter(l => !l.startsWith('~~'))
-        .map(l => l.split(", ")),
-    dp = new DOMParser()
-
-if (window.location.href.includes("?id=")) {
-    const paramStr = window.location.href.split("?")[1],
-        params = new URLSearchParams(paramStr),
-        id = params.get('id'),
-        postname = index[parseInt(id)][0]
-
-    return dp.parseFromString(`<compute @=scripts/post.js post='${postname}' />`, 'text/html').body.children.item(0)
+    return dp.parseFromString(`<compute @=scripts/post.js post='${post.name}' />`, 'text/html').body.children.item(0)
 }
 
 const section = document.createElement('section'),
     hra = document.createElement('hr'),
-    hrb = document.createElement('hr')
+    hrb = document.createElement('hr'),
+    skip = params.get('index') == 'hidden'
+        ? ({ hidden }) => !hidden
+        : ({ hidden }) => hidden
 
 section.append(hra)
 
-let i = 0
-for (const [postname, _, desc] of index) {
+for (const post of index) {
+    if (skip(post)) {
+        continue
+    }
+    
     const a = document.createElement('div'),
         top = document.createElement('section'),
         bottom = document.createElement('em'),
         postEl = document.createElement('h1'),
         anchor = document.createElement('a'),
-        dateEl = dp.parseFromString(`<em muteder>${indexDateInfo(postname)}</em>`, 'text/html').body.children.item(0)
+        dateEl = dp.parseFromString(`<em muteder>${indexDateInfo(post.name)}</em>`, 'text/html').body.children.item(0)
 
     
     top.role = 'group'
@@ -38,21 +39,16 @@ for (const [postname, _, desc] of index) {
     a.setAttribute('post', true)
     bottom.setAttribute('muted', true)
     dateEl.setAttribute('post-date', true)
-    anchor.textContent = postname
+    anchor.textContent = post.name
     postEl.append(anchor)
 
-    const idx = i
-    anchor.addEventListener('click', () => {
-        window.location.href = '/?id=' + String(idx)
-    })
+    anchor.addEventListener('click', () => redirect(`/?id=${post.id}`))
 
     top.append(postEl, dateEl)
-    bottom.append(desc)
+    bottom.append(post.description)
     
     a.append(top, bottom)
     section.append(a)
-    
-    i++
 }
 
 section.append(hrb)
