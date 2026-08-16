@@ -83,6 +83,11 @@ em[post-date] {
     transition: opacity .5s;
 }
 
+/* templates, not content — must not paint before hydration reaches them */
+compute, page {
+    display: none;
+}
+
 [blocker] {
     position: fixed;
     inset: 0;

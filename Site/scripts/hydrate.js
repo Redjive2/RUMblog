@@ -26,6 +26,10 @@ async function hydrate() {
         // would otherwise re-collect anything this loop hasn't started yet
         link.setAttribute('handled', 'true')
 
+        // count the whole batch up front; counting inside the resolvers lets
+        // pending hit 0 between sequential targets and lifts the blocker early
+        pending++
+
         if (link.nodeName == 'PAGE') {
             targets.push(resolvePage.bind(this, link))
         } else {
@@ -44,7 +48,6 @@ async function hydrate() {
 
     async function resolvePage(link) {
         link.setAttribute('hidden', true)
-        pending++
 
         try {
             const path = new URL("http://localhost:8080/" + link.getAttribute('@')).pathname,
@@ -78,7 +81,6 @@ async function hydrate() {
         console.warn(link.getAttribute('@'))
 
         link.setAttribute('hidden', true)
-        pending++
 
         try {
             const path = new URL("http://localhost:8080/" + link.getAttribute('@')).pathname,
