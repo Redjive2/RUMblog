@@ -1,8 +1,9 @@
 const dp = new DOMParser(),
-    obs = new window.MutationObserver(hydrate)
+    obs = new window.MutationObserver(hydrate),
+    sourceCache = new Map(),
+    compiledCache = new Map()
 
-let pending = 0,
-    firstRun = true
+let pending = 0
 
 function checkDone() {
     if (pending > 0 || document.querySelector('page:not([handled]), compute:not([handled])')) {
@@ -12,14 +13,34 @@ function checkDone() {
     document.querySelector('[blocker]')?.setAttribute('done', '')
 }
 
+// one fetch per path, however many <compute>/<page> reference it
+function loadSource(path) {
+    if (!sourceCache.has(path)) {
+        sourceCache.set(path, fetch(path).then(resp => resp.text()))
+    }
+
+    return sourceCache.get(path)
+}
+
+// one compile per path — baseFunction is instance-independent, since every
+// per-instance binding arrives through .call(container) at invocation time
+function compile(path, code) {
+    if (!compiledCache.has(path)) {
+        compiledCache.set(path, eval?.(`
+            (async function() {
+                ${code}
+            })
+            //# sourceURL=${path}
+        `))
+    }
+
+    return compiledCache.get(path)
+}
+
 obs.observe(document.body, { childList: true, subtree: true })
 async function hydrate() {
-    // claim the flag up front — a nested hydrate() with an empty target list
-    // would otherwise clear it and drop this run out of sequential mode
-    const isFirstRun = firstRun
-    firstRun = false
-
-    const targets = []
+    const providers = [],
+        rest = []
 
     document.querySelectorAll('page:not([handled]), compute:not([handled])').forEach(link => {
         // claim synchronously — a nested hydrate() triggered during a later await
@@ -27,32 +48,34 @@ async function hydrate() {
         link.setAttribute('handled', 'true')
 
         // count the whole batch up front; counting inside the resolvers lets
-        // pending hit 0 between sequential targets and lifts the blocker early
+        // pending hit 0 between targets and lifts the blocker early
         pending++
 
-        if (link.nodeName == 'PAGE') {
-            targets.push(resolvePage.bind(this, link))
+        const resolve = link.nodeName == 'PAGE'
+            ? resolvePage.bind(this, link)
+            : resolveCompute.bind(this, link)
+
+        // lib/ publishes the globals (params, index) that scripts/ reads, so it
+        // has to settle first; everything else is independent and runs at once
+        if (link.getAttribute('@')?.startsWith('lib/')) {
+            providers.push(resolve)
         } else {
-            targets.push(resolveCompute.bind(this, link))
+            rest.push(resolve)
         }
     })
 
-    for (const target of targets) {
-        if (isFirstRun) {
-            await target()
-            continue
-        }
-
-        target()
+    if (providers.length) {
+        await Promise.all(providers.map(resolve => resolve()))
     }
+
+    rest.forEach(resolve => resolve())
 
     async function resolvePage(link) {
         link.setAttribute('hidden', true)
 
         try {
             const path = new URL("http://localhost:8080/" + link.getAttribute('@')).pathname,
-                resp = await fetch(path),
-                text = await resp.text(),
+                text = await loadSource(path),
                 page = dp.parseFromString(text, 'text/html'),
                 frag = document.createDocumentFragment()
 
@@ -78,16 +101,13 @@ async function hydrate() {
     }
 
     async function resolveCompute(link) {
-        console.warn(link.getAttribute('@'))
-
         link.setAttribute('hidden', true)
 
         try {
             const path = new URL("http://localhost:8080/" + link.getAttribute('@')).pathname,
-                resp = await fetch(path),
-                text = await resp.text(),
+                text = await loadSource(path),
                 host = document.createElement('host'), // never inserted — `this` binding only
-                f = wrapFunction(text, host)
+                f = wrapFunction(path, text, host)
 
             for (const attr of link.attributes) {
                 // '@' is routing metadata, already consumed above — and it isn't a
@@ -121,12 +141,8 @@ async function hydrate() {
 
 hydrate()
 
-function wrapFunction(code, container) {
-    const baseFunction = eval?.(`
-        (async function() {
-            ${code}
-        })
-    `)
+function wrapFunction(path, code, container) {
+    const baseFunction = compile(path, code)
 
     return async () => {
         try {
