@@ -1,7 +1,8 @@
 const dp = new DOMParser(),
     obs = new window.MutationObserver(hydrate),
     sourceCache = new Map(),
-    compiledCache = new Map()
+    compiledCache = new Map(),
+    SOURCE_STORE = 'compute-sources'
 
 let pending = 0
 
@@ -16,10 +17,38 @@ function checkDone() {
 // one fetch per path, however many <compute>/<page> reference it
 function loadSource(path) {
     if (!sourceCache.has(path)) {
-        sourceCache.set(path, fetch(path).then(resp => resp.text()))
+        sourceCache.set(path, revalidatingFetch(path))
     }
 
     return sourceCache.get(path)
+}
+
+// stale-while-revalidate across page loads: answer from the store immediately,
+// refresh in the background so the next load picks up a deploy on its own
+async function revalidatingFetch(path) {
+    // caches is absent outside secure contexts — e.g. http:// over a LAN IP
+    if (!globalThis.caches) {
+        return (await fetch(path)).text()
+    }
+
+    const store = await caches.open(SOURCE_STORE),
+        cached = await store.match(path),
+        // 'no-cache' forces a server revalidation, so a stale HTTP cache entry
+        // can't answer this; a 304 still resolves with the current body
+        fresh = fetch(path, { cache: 'no-cache' }).then(resp => {
+            if (resp.ok) {
+                store.put(path, resp.clone())
+            }
+
+            return resp
+        })
+
+    if (cached) {
+        fresh.catch(() => {}) // background refresh; a failure here is not fatal
+        return cached.text()
+    }
+
+    return (await fresh).text()
 }
 
 // one compile per path — baseFunction is instance-independent, since every

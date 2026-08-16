@@ -1,4 +1,6 @@
-const markdown = await import('https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js'),
+// absolute URL on purpose — relative import() specifiers have no reliable base
+// inside eval'd code, which is where every compute runs
+const markdown = await import(location.origin + '/lib/marked.esm.js'),
     dp = new DOMParser(),
     resp = await fetch('posts/' + this.post + '.md'),
     text = await resp.text(),

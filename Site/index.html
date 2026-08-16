@@ -6,6 +6,15 @@
         <meta name=color-scheme content='light dark' />
         <link rel="stylesheet" href="styles/pico.sand.css">
         <link rel=stylesheet href=styles/main.css />
+
+        <!-- hydrate.js can't be discovered by the parser until it runs, so start
+             its first-wave fetches now instead of one round trip later -->
+        <link rel=modulepreload href=/scripts/hydrate.js>
+        <link rel=preload as=fetch href=/lib/indexProvider.js crossorigin>
+        <link rel=preload as=fetch href=/lib/redirectProvider.js crossorigin>
+        <link rel=preload as=fetch href=/scripts/rule.js crossorigin>
+        <link rel=preload as=fetch href=/pages/nav.htm crossorigin>
+
         <script type=module src=scripts/hydrate.js defer></script>
         <title>RUMblog</title>
     </head>

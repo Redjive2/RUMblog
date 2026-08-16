@@ -1,0 +1,31 @@
+# Fingerprinted-by-content assets: safe to hold forever.
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/favicon.ico
+  Cache-Control: public, max-age=31536000, immutable
+
+# Vendored and pinned by version in the file itself.
+/lib/marked.esm.js
+  Cache-Control: public, max-age=31536000, immutable
+
+# Everything hydrate.js pulls at runtime. max-age=0 means the browser always
+# revalidates, so a deploy is picked up without any version bumping — the
+# stale-while-revalidate layer in hydrate.js supplies the speed instead.
+/scripts/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/lib/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/pages/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/posts/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/styles/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/index.html
+  Cache-Control: public, max-age=0, must-revalidate
