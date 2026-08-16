@@ -33,9 +33,10 @@ async function revalidatingFetch(path) {
 
     const store = await caches.open(SOURCE_STORE),
         cached = await store.match(path),
-        // 'no-cache' forces a server revalidation, so a stale HTTP cache entry
-        // can't answer this; a 304 still resolves with the current body
-        fresh = fetch(path, { cache: 'no-cache' }).then(resp => {
+        // default cache mode on purpose: _headers sends max-age=0,
+        // must-revalidate for these paths, so this still revalidates against the
+        // server, and staying default lets it consume the <link rel=preload>
+        fresh = fetch(path).then(resp => {
             if (resp.ok) {
                 store.put(path, resp.clone())
             }

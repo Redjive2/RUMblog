@@ -8,7 +8,9 @@
         <link rel=stylesheet href=styles/main.css />
 
         <!-- hydrate.js can't be discovered by the parser until it runs, so start
-             its first-wave fetches now instead of one round trip later -->
+             its first-wave fetches now instead of one round trip later. these
+             only get consumed while hydrate.js fetches at the default cache
+             mode — a cache: 'reload'/'no-cache' there would discard them -->
         <link rel=modulepreload href=/scripts/hydrate.js>
         <link rel=preload as=fetch href=/lib/indexProvider.js crossorigin>
         <link rel=preload as=fetch href=/lib/redirectProvider.js crossorigin>
