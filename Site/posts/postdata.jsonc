@@ -1,0 +1,27 @@
+{
+  "public": {},
+  
+  "wip": {
+    "on-rumble-writing": {
+      "title": "On Rumble Writing",
+      "date": [8, 12, 26],
+      "description": "A quick welcome to the RUMblog.",
+    },
+  },
+    
+  "miniset": {
+    "miniset-rules": {
+      "title": "MiniSET Rules",
+      "date": [8, 15, 26],
+      "description": "Version 0.2",
+    },
+  },
+
+  "vhq": {
+    "volatile-chalice-rules": {
+      "title": "Volatile Chalice Rules",
+      "date": [8, 16, 26],
+      "description": "Version 0.1",
+    },
+  },
+}

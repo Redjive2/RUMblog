@@ -2,16 +2,14 @@
 // inside eval'd code, which is where every compute runs
 const markdown = await import(location.origin + '/lib/marked.esm.js'),
     dp = new DOMParser(),
-    resp = await fetch('posts/' + this.post + '.md'),
+    post = index.find(p => p.id == this.post && p.namespace == params.get('namespace')),
+    resp = await fetch(post.path),
     text = await resp.text(),
     article = document.createElement('article'),
     md = markdown.parse(text),
     contents = dp.parseFromString(md, 'text/html'),
-    subpaths = this.post.split('/'),
-    lastSubpath = subpaths[subpaths.length - 1],
-    postname = lastSubpath.split('.')[0],
-    note = `<em muteder>: ${indexDateInfo(postname)}</em>`,
-    header = dp.parseFromString(`<page @=pages/header.htm note='${note}' title='${postname}' />`, 'text/html').body.children.item(0)
+    note = `<em muteder>: ${indexDateInfo(post)}</em>`,
+    header = dp.parseFromString(`<page @=pages/header.htm note='${note}' title='${post.title}' />`, 'text/html').body.children.item(0)
 
 article.append(header, ...contents.body.children)
 

@@ -1,7 +1,4 @@
-const posts = index.filter(post => params.get('index') == 'hidden'
-        ? post.hidden
-        : !post.hidden
-    ),
+const posts = index.filter(post => post.namespace == params.get('namespace')),
     select = document.createElement('select'),
     dp = new DOMParser()
 
@@ -11,10 +8,10 @@ select.required = false
 select.append(dp.parseFromString(`<option value='HOME'>Posts</option>`, 'text/html').body.children.item(0))
 
 for (const post of posts) {
-    select.append(dp.parseFromString(`<option value='${post.id}'>${post.name}</option>`, 'text/html').body.children.item(0))
+    select.append(dp.parseFromString(`<option value='${post.id}'>${post.title}</option>`, 'text/html').body.children.item(0))
 }
 
-let value = params.get('id') ?? 'HOME'
+let value = params.get('post') ?? 'HOME'
 select.setAttribute('value', value)
 select.value = value
 
@@ -24,7 +21,7 @@ select.addEventListener('change', () => {
         return
     }
 
-    redirect(`/?id=${select.value}`)
+    redirect(`/?post=${select.value}`)
 })
 
 return select

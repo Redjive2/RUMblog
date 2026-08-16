@@ -1,38 +1,63 @@
-window.ruleId ??= 0
-
-const thisEl = this,
-    targetEl = getTargetElement(),
-    MARK = 'changed-by-rule-instance-' + String(window.ruleId++),
-    boundChange = () => change(targetEl, thisEl.target, childFrag)
-
-new MutationObserver(
-    boundChange
-).observe(targetEl, {
-    childList: true,
-    subtree: true
-})
-
-boundChange()
-
-function childFrag() {
-    const frag = document.createDocumentFragment()
-
-    for (const c of thisEl.children) {
-        const node = c.cloneNode(true)
-        node.setAttribute?.(MARK, true)
-        frag.append(node)
-    }
-    
-    return frag
+// Every <compute @=scripts/rule.js> registers into one shared, per-root pass
+// instead of running its own. Independent passes collide: whichever ran first
+// consumed the text, so `match` would split "Matchup" and leave `Matchup` with
+// nothing contiguous to find. Here all patterns compete at each position and
+// the longest match wins, so a rule can never eat another rule's prefix.
+window.ruleState ??= {
+    byRoot: new Map(),
+    timer: null,
 }
 
-function change(root, str, transform) {
+const MARK = 'data-ruled',
+    thisEl = this,
+    root = getTargetElement()
+
+register(root, {
+    // sticky, not global: exec() must only ever match at the offset we set
+    pattern: new RegExp(thisEl.target, 'y'),
+    render: childFrag,
+})
+
+function register(root, rule) {
+    let entry = window.ruleState.byRoot.get(root)
+
+    if (!entry) {
+        entry = { rules: [] }
+        window.ruleState.byRoot.set(root, entry)
+
+        new MutationObserver(() => schedule()).observe(root, {
+            childList: true,
+            subtree: true,
+        })
+    }
+
+    entry.rules.push(rule)
+    schedule()
+}
+
+// Batch to the next macrotask so every rule resolving in this turn registers
+// before the first pass runs — a rule that arrives later cannot reclaim text an
+// earlier one already consumed.
+function schedule() {
+    if (window.ruleState.timer != null) {
+        return
+    }
+
+    window.ruleState.timer = setTimeout(() => {
+        window.ruleState.timer = null
+
+        for (const [root, entry] of window.ruleState.byRoot) {
+            runPass(root, entry.rules)
+        }
+    }, 0)
+}
+
+function runPass(root, rules) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
         acceptNode: node =>
-            node.data.includes(str) &&
-            !node.parentElement?.closest(`script, style, option, [${MARK}]`)
-                ? NodeFilter.FILTER_ACCEPT
-                : NodeFilter.FILTER_REJECT,
+            node.parentElement?.closest(`script, style, option, [${MARK}]`)
+                ? NodeFilter.FILTER_REJECT
+                : NodeFilter.FILTER_ACCEPT,
     })
 
     // collect before mutation; editing during the walk invalidates
@@ -40,21 +65,87 @@ function change(root, str, transform) {
     while (walker.nextNode()) targets.push(walker.currentNode)
 
     for (const target of targets) {
-        const frag = document.createDocumentFragment()
-
-        target.data.split(str).forEach((part, i) => {
-            if (i > 0) {
-                const result = transform()
-                frag.append(result)
-            }
-
-            if (part) {
-                frag.append(part)
-            }
-        })
-
-        target.replaceWith(frag)
+        replaceIn(target, rules)
     }
+}
+
+function replaceIn(node, rules) {
+    const data = node.data
+
+    let frag = null,
+        last = 0,
+        i = 0
+
+    while (i < data.length) {
+        let best = null
+
+        for (const rule of rules) {
+            rule.pattern.lastIndex = i
+
+            const match = rule.pattern.exec(data)
+
+            // longest wins; ties go to whichever registered first
+            if (match?.[0] && (!best || match[0].length > best.text.length)) {
+                best = { rule, text: match[0] }
+            }
+        }
+
+        if (!best) {
+            i++
+            continue
+        }
+
+        frag ??= document.createDocumentFragment()
+
+        if (i > last) {
+            frag.append(data.slice(last, i))
+        }
+
+        frag.append(best.rule.render(best.text))
+
+        i += best.text.length
+        last = i
+    }
+
+    if (!frag) {
+        return
+    }
+
+    if (last < data.length) {
+        frag.append(data.slice(last))
+    }
+
+    node.replaceWith(frag)
+}
+
+function childFrag(matched) {
+    const frag = document.createDocumentFragment()
+
+    for (const c of thisEl.children) {
+        const node = c.cloneNode(true)
+        node.setAttribute?.(MARK, true)
+        frag.append(node)
+    }
+
+    // <argument target /> receives the substring this match actually found,
+    // which is what makes a pattern broader than one literal worth writing
+    frag.querySelectorAll('argument[target]').forEach(argument => {
+        // at the top level there is no marked ancestor to inherit, so bare text
+        // here would be re-matched on the next mutation, forever — wrap it
+        if (argument.parentNode == frag) {
+            const wrapper = document.createElement('span')
+
+            wrapper.setAttribute(MARK, true)
+            wrapper.textContent = matched
+            argument.replaceWith(wrapper)
+
+            return
+        }
+
+        argument.replaceWith(matched)
+    })
+
+    return frag
 }
 
 function getTargetElement() {
@@ -68,5 +159,11 @@ function getTargetElement() {
         return document.body
     }
 
-    return document.querySelector('root')
+    const el = document.querySelector(root)
+
+    if (!el) {
+        throw new Error(`rule.js: no element matches root="${root}"`)
+    }
+
+    return el
 }

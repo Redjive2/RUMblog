@@ -1,7 +1,7 @@
 const params = new URLSearchParams(window.location.href.split('?')[1])
 
-if (!params.has('index')) {
-    params.set('index', 'visible')
+if (!params.has('namespace')) {
+    params.set('namespace', 'public')
 }
 
 function redirect(path) {
@@ -13,17 +13,17 @@ function redirect(path) {
             : 'light')
         ?? 'light'
 
-    const indext =
-        params.get('index') ??
-        'visible'
+    const namespace =
+        params.get('namespace') ??
+        'public'
 
     if (path.startsWith('/?')) {
-        window.location.href = path + "&index=" + indext + "&theme=" + theme
+        window.location.href = path + "&namespace=" + namespace + "&theme=" + theme
         return
     }
 
     if (!path.includes('?')) {
-        window.location.href = path + "?index=" + indext + "&theme=" + theme
+        window.location.href = path + "?namespace=" + namespace + "&theme=" + theme
         return
     }
 

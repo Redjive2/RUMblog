@@ -1,39 +1,39 @@
-let data
-
-const resp = await fetch('posts/index.lines'),
+const resp = await fetch('posts/postdata.jsonc'),
     text = await resp.text(),
-    rawData = text.split('\n')
+    // JSONC: JS object syntax already permits the comments and trailing commas
+    // JSON.parse rejects, and unlike a regex strip it cannot corrupt strings
+    postdata = new Function('return (' + text + ')')()
 
-data = rawData
-    .filter(line => !line.startsWith('##'))
-    .map(line => line.split(', '))
-    .map((row, index) => [index, ...row])
-    .map(row => ({
-        id: row[0],
-        name: row[1].startsWith('~~ ') ? row[1].split('~~ ')[1] : row[1],
-        date:  row[2],
-        description: row[3],
-        hidden: row[1].startsWith('~~ '),
-    }))
-
-data.forEach(row => {
-    row.latest = data.filter(r => !r.hidden).indexOf(row) == data.filter(r => !r.hidden).length - 1
-})
-
-data.map(row => Object.freeze(row))
-
-globalThis.index = data
-
-globalThis.indexDateInfo = function(postname) {
-    const latestData = data.filter(post => post.latest),
-        latest = latestData[latestData.length - 1]
-        date = data.filter(post => post.name == postname)[0].date
-
-    if (latest.name == postname) {
-        return `${date} (latest)`
-    }
-
-    return date
+if (!postdata.public) {
+    throw new Error("postdata.jsonc must define a 'public' namespace")
 }
 
-Object.freeze(data)
+const data = []
+
+for (const [namespace, posts] of Object.entries(postdata)) {
+    const ids = Object.keys(posts)
+
+    for (const [id, info] of Object.entries(posts)) {
+        data.push(Object.freeze({
+            namespace,
+            id,
+            title: info.title,
+            date: info.date.join('/'),
+            description: info.description,
+            // insertion order is authoring order, so the last entry is newest
+            latest: id == ids[ids.length - 1],
+            // one owner for the posts/<namespace>/<id>.md layout
+            path: `posts/${namespace}/${id}.md`,
+        }))
+    }
+}
+
+globalThis.index = Object.freeze(data)
+
+globalThis.indexDateInfo = function(post) {
+    if (post.latest) {
+        return `${post.date} (latest)`
+    }
+
+    return post.date
+}
