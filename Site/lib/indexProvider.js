@@ -25,7 +25,8 @@ data.map(row => Object.freeze(row))
 globalThis.index = data
 
 globalThis.indexDateInfo = function(postname) {
-    const latest = data.filter(post => post.latest)[0],
+    const latestData = data.filter(post => post.latest),
+        latest = latestData[latestData.length - 1]
         date = data.filter(post => post.name == postname)[0].date
 
     if (latest.name == postname) {
