@@ -19,7 +19,7 @@ const section = document.createElement('section'),
         ? ({ hidden }) => !hidden
         : ({ hidden }) => hidden
 
-section.append(hra)
+section.prepend(hra)
 
 for (const post of index) {
     if (skip(post)) {
@@ -48,9 +48,9 @@ for (const post of index) {
     bottom.append(post.description)
     
     a.append(top, bottom)
-    section.append(a)
+    section.prepend(a)
 }
 
-section.append(hrb)
+section.prepend(hrb)
 
 return section

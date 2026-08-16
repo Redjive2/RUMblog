@@ -10,8 +10,8 @@
   Cache-Control: public, max-age=31536000, immutable
 
 # Everything hydrate.js pulls at runtime. max-age=0 means the browser always
-# revalidates, so a deploy is picked up without any version bumping — the
-# stale-while-revalidate layer in hydrate.js supplies the speed instead.
+# revalidates, so a deploy is picked up without any version bumping. the
+# stale-while-revalidate layer in hydrate.js supplies the speed instead
 /scripts/*
   Cache-Control: public, max-age=0, must-revalidate
 
