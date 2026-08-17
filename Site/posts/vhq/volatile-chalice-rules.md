@@ -125,6 +125,7 @@ During the major period, matchups will play a simplified version of the [final p
 - If a competitor forfeits a match or is disqualified <small>(see [grounds for disqualification](#match-conduct))</small>, all points will be assigned to the other competitor.
 - Two style judges will each split three style points between the competitors by merit for general stylish gameplay <small>(including explode use)</small>.
 - One VC judge will split five explode points between the competitors by merit for explode use.
+  - VC judges may serve as style judges at their discretion.
 - Each judge will assign one point per set and their remaining point(s) for overall performance.
 - Judges may participate live or participate via vod review.
   - <small>To make judges' lives easier, competitors are expected to follow the rules listed under the [vod format ruleset](#match-conduct) precisely.</small>
