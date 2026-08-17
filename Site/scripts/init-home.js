@@ -7,7 +7,7 @@ if (params.has('post')) {
         throw new Error(`Cannot find document where id = ${id} in namespace '${params.get('namespace')}'.`)
     }
 
-    return dp.parseFromString(`<compute @=scripts/post.js post='${post.id}' />`, 'text/html').body.children.item(0)
+    return dp.parseFromString(`<call scripts.post post='${post.id}' />`, 'text/html').body.children.item(0)
 }
 
 const section = document.createElement('section'),

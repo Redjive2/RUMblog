@@ -2,7 +2,7 @@
     <ul post-select>
         <li><em muted>post:</em></li>
         <li>
-            <compute @=scripts/postlist.js />
+            <call scripts.post-selector />
         </li>
     </ul>
     <ul>
@@ -11,12 +11,12 @@
                 <strong><em style='color: #b69b6b'>RUM</em>blog</strong>
             </a>
             
-            <compute @=scripts/attach-anchor.js />
+            <call scripts.attach-anchor />
         </li>
     </ul>
     <ul>
         <li>
-            <compute @=scripts/modeselector.js />
+            <call scripts.mode-selector />
         </li>
     </ul>
 </nav>

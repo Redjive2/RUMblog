@@ -11,91 +11,86 @@
              its first-wave fetches now instead of one round trip later. these
              only get consumed while hydrate.js fetches at the default cache
              mode — a cache: 'reload'/'no-cache' there would discard them -->
-        <link rel=modulepreload href=/scripts/hydrate.js>
-        <link rel=preload as=fetch href=/lib/indexProvider.js crossorigin>
-        <link rel=preload as=fetch href=/lib/redirectProvider.js crossorigin>
+        <link rel=modulepreload href=/hydrate.js>
+        <link rel=preload as=fetch href=/lib/index-provider.js crossorigin>
+        <link rel=preload as=fetch href=/lib/redirect-provider.js crossorigin>
         <link rel=preload as=fetch href=/scripts/rule.js crossorigin>
-        <link rel=preload as=fetch href=/pages/nav.htm crossorigin>
+        <link rel=preload as=fetch href=/ui/nav.htm crossorigin>
 
-        <script type=module src=scripts/hydrate.js defer></script>
+        <script type=module src=hydrate.js defer></script>
         <title>RUMblog</title>
+
     </head>
     <body>
         <div blocker></div>
 
-        <compute @=lib/indexProvider.js></compute>
-        <compute @=lib/redirectProvider.js></compute>
+        <call lib.index-provider></call>
+        <call lib.redirect-provider></call>
 
-        <compute @=scripts/rule.js target=RUMBLE>
-            <strong style='color: rgb(182, 155, 107);'><em>RUMBLE</em></strong>
-        </compute>
+        <call scripts.rule target=RUMBLE>
+            <strong style='color: rgb(182, 155, 107);'><em>
+                <argument target></argument>
+            </em></strong>
+        </call>
 
-        <compute @=scripts/rule.js target=volatile>
-            <em style='color: rgb(238, 118, 118);'>volatile</em>
-        </compute>
-        <compute @=scripts/rule.js target=Volatile>
-            <strong style='color: rgb(238, 118, 118);'><em>Volatile</em></strong>
-        </compute>
-        
-        <compute @=scripts/rule.js target=flow>
-            <em style='color: rgb(78, 200, 200);'>flow</em>
-        </compute>
-        <compute @=scripts/rule.js target=Flow>
-            <strong style='color: rgb(98, 200, 200);'><em>Flow</em></strong>
-        </compute>
-        
-        <compute @=scripts/rule.js target=charge>
-            <em style='color: rgb(230, 200, 105);'>charge</em>
-        </compute>
-        <compute @=scripts/rule.js target=Charge>
-            <strong style='color: rgb(230, 200, 105);'><em>Charge</em></strong>
-        </compute>
-        
-        <compute @=scripts/rule.js target=stubborn>
-            <em style='color: rgb(100, 150, 220);'>stubborn</em>
-        </compute>
-        <compute @=scripts/rule.js target=Stubborn>
-            <strong style='color: rgb(100, 150, 220);'><em>Stubborn</em></strong>
-        </compute>
-        
-        <compute @=scripts/rule.js target=guard>
-            <em style='color: rgb(225, 160, 110);'>guard</em>
-        </compute>
-        <compute @=scripts/rule.js target=Guard>
-            <strong style='color: rgb(225, 160, 110);'><em>Guard</em></strong>
-        </compute>
-        
-        <compute @=scripts/rule.js target=adamant>
-            <em style='color: rgb(205, 120, 220);'>adamant</em>
-        </compute>
-        <compute @=scripts/rule.js target=Adamant>
-            <strong style='color: rgb(205, 120, 220);'><em>Adamant</em></strong>
-        </compute>
-        
-        <compute @=scripts/rule.js target=surge>
-            <em style='color: rgb(120, 210, 100);'>surge</em>
-        </compute>
-        <compute @=scripts/rule.js target=Surge>
-            <strong style='color: rgb(120, 210, 100);'><em>Surge</em></strong>
-        </compute>
-        
-        <compute @=scripts/rule.js target=vigor>
-            <em style='color: rgb(190, 205, 120);'>vigor</em>
-        </compute>
-        <compute @=scripts/rule.js target=Vigor>
-            <strong style='color: rgb(190, 205, 120);'><em>Vigor</em></strong>
-        </compute>
+        <call scripts.rule target=[Vv]olatile>
+            <em style='color: rgb(238, 118, 118);'>
+                <argument target></argument>
+            </em>
+        </call>
+
+        <call scripts.rule target=[Ff]low>
+            <em style='color: rgb(78, 200, 200);'>
+                <argument target></argument>
+            </em>
+        </call>
+
+        <call scripts.rule target=[Cc]harge>
+            <em style='color: rgb(230, 200, 105);'>
+                <argument target></argument>
+            </em>
+        </call>
+
+        <call scripts.rule target=[Ss]tubborn>
+            <em style='color: rgb(100, 150, 220);'>
+                <argument target></argument>
+            </em>
+        </call>
+
+        <call scripts.rule target=[Gg]uard>
+            <em style='color: rgb(225, 160, 110);'>
+                <argument target></argument>
+            </em>
+        </call>
+
+        <call scripts.rule target=[Aa]damant>
+            <em style='color: rgb(205, 120, 220);'>
+                <argument target></argument>
+            </em>
+        </call>
+
+        <call scripts.rule target=[Ss]urge>
+            <em style='color: rgb(120, 210, 100);'>
+                <argument target></argument>
+            </em>
+        </call>
+
+        <call scripts.rule target=[Vv]igor>
+            <em style='color: rgb(190, 205, 120);'>
+                <argument target></argument>
+            </em>
+        </call>
 
         <header>
-            <page @=pages/nav.htm />
+            <page ui.nav />
         </header>
-        
+
         <main class=container-fluid>
-            <compute @=scripts/init-home.js />
+            <call scripts.init-home />
         </main>
-        
+
         <footer>
-            <page @=pages/links.htm />
+            <page ui.links />
         </footer>
     </body>
 </html>

@@ -1,4 +1,4 @@
-// Every <compute @=scripts/rule.js> registers into one shared, per-root pass
+// Every <call scripts.rule /> registers into one shared, per-root pass
 // instead of running its own. Independent passes collide: whichever ran first
 // consumed the text, so `match` would split "Matchup" and leave `Matchup` with
 // nothing contiguous to find. Here all patterns compete at each position and
@@ -119,33 +119,41 @@ function replaceIn(node, rules) {
 }
 
 function childFrag(matched) {
-    const frag = document.createDocumentFragment()
+    // one marked wrapper around the whole instance, rather than a mark per
+    // node: a nested <call> in the template swaps itself for unmarked output
+    // when it resolves, and per-node marks let that output escape the guard
+    // and get re-matched forever. inline, so it does not disturb prose flow
+    const wrapper = document.createElement('span'),
+        nodes = [...thisEl.childNodes]
 
-    for (const c of thisEl.children) {
-        const node = c.cloneNode(true)
-        node.setAttribute?.(MARK, true)
-        frag.append(node)
+    // drop the template's own indentation, which would otherwise inject a
+    // space on both sides of every match; whitespace *between* elements still
+    // matters, e.g. the gap in `</argument> <small>(0)</small>`
+    while (nodes.length && isBlank(nodes[0])) {
+        nodes.shift()
+    }
+
+    while (nodes.length && isBlank(nodes[nodes.length - 1])) {
+        nodes.pop()
+    }
+
+    wrapper.setAttribute(MARK, true)
+
+    for (const c of nodes) {
+        wrapper.append(c.cloneNode(true))
     }
 
     // <argument target /> receives the substring this match actually found,
     // which is what makes a pattern broader than one literal worth writing
-    frag.querySelectorAll('argument[target]').forEach(argument => {
-        // at the top level there is no marked ancestor to inherit, so bare text
-        // here would be re-matched on the next mutation, forever — wrap it
-        if (argument.parentNode == frag) {
-            const wrapper = document.createElement('span')
-
-            wrapper.setAttribute(MARK, true)
-            wrapper.textContent = matched
-            argument.replaceWith(wrapper)
-
-            return
-        }
-
+    wrapper.querySelectorAll('argument[target]').forEach(argument => {
         argument.replaceWith(matched)
     })
 
-    return frag
+    return wrapper
+}
+
+function isBlank(node) {
+    return node.nodeType == Node.TEXT_NODE && !node.data.trim()
 }
 
 function getTargetElement() {

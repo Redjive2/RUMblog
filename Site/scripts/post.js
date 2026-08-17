@@ -1,5 +1,5 @@
 // absolute URL on purpose — relative import() specifiers have no reliable base
-// inside eval'd code, which is where every compute runs
+// inside eval'd code, which is where every call runs
 const markdown = await import(location.origin + '/lib/marked.esm.js'),
     dp = new DOMParser(),
     post = index.find(p => p.id == this.post && p.namespace == params.get('namespace')),
@@ -9,7 +9,7 @@ const markdown = await import(location.origin + '/lib/marked.esm.js'),
     md = markdown.parse(text),
     contents = dp.parseFromString(md, 'text/html'),
     note = `<em muteder>: ${indexDateInfo(post)}</em>`,
-    header = dp.parseFromString(`<page @=pages/header.htm note='${note}' title='${post.title}' />`, 'text/html').body.children.item(0)
+    header = dp.parseFromString(`<page ui.header note='${note}' title='${post.title}' />`, 'text/html').body.children.item(0)
 
 article.append(header, ...contents.body.children)
 

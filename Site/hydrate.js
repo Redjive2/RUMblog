@@ -2,19 +2,19 @@ const dp = new DOMParser(),
     obs = new window.MutationObserver(hydrate),
     sourceCache = new Map(),
     compiledCache = new Map(),
-    SOURCE_STORE = 'compute-sources'
+    SOURCE_STORE = 'call-sources'
 
 let pending = 0
 
 function checkDone() {
-    if (pending > 0 || document.querySelector('page:not([handled]), compute:not([handled])')) {
+    if (pending > 0 || document.querySelector('page:not([handled]), call:not([handled])')) {
         return
     }
 
     document.querySelector('[blocker]')?.setAttribute('done', '')
 }
 
-// one fetch per path, however many <compute>/<page> reference it
+// one fetch per path, however many <call>/<page> reference it
 function loadSource(path) {
     if (!sourceCache.has(path)) {
         sourceCache.set(path, revalidatingFetch(path))
@@ -72,7 +72,14 @@ async function hydrate() {
     const providers = [],
         rest = []
 
-    document.querySelectorAll('page:not([handled]), compute:not([handled])').forEach(link => {
+    document.querySelectorAll('page:not([handled]), call:not([handled])').forEach(link => {
+        // nested inside another page/call, so this is template markup, not a
+        // live node. leave it inert: the owner moves it off-document into its
+        // host, and each clone it inserts gets collected on a later pass
+        if (link.parentElement?.closest('page, call')) {
+            return
+        }
+
         // claim synchronously — a nested hydrate() triggered during a later await
         // would otherwise re-collect anything this loop hasn't started yet
         link.setAttribute('handled', 'true')
@@ -83,11 +90,13 @@ async function hydrate() {
 
         const resolve = link.nodeName == 'PAGE'
             ? resolvePage.bind(this, link)
-            : resolveCompute.bind(this, link)
+            : resolveCall.bind(this, link)
 
-        // lib/ publishes the globals (params, index) that scripts/ reads, so it
-        // has to settle first; everything else is independent and runs at once
-        if (link.getAttribute('@')?.startsWith('lib/')) {
+        // lib. publishes the globals (params, index) that scripts. reads, so it
+        // has to settle first; everything else is independent and runs at once.
+        // the route is the first attribute — setAttribute appends, so 'handled'
+        // above lands after it
+        if (link.attributes.item(0)?.name.startsWith('lib.')) {
             providers.push(resolve)
         } else {
             rest.push(resolve)
@@ -104,7 +113,8 @@ async function hydrate() {
         link.setAttribute('hidden', true)
 
         try {
-            const path = new URL("http://localhost:8080/" + link.getAttribute('@')).pathname,
+            const at = link.attributes.item(0).name.replace('.', '/') + '.htm',
+                path = new URL("http://localhost:8080/" + at).pathname,
                 text = await loadSource(path),
                 page = dp.parseFromString(text, 'text/html'),
                 frag = document.createDocumentFragment()
@@ -130,19 +140,19 @@ async function hydrate() {
         }
     }
 
-    async function resolveCompute(link) {
+    async function resolveCall(link) {
         link.setAttribute('hidden', true)
 
         try {
-            const path = new URL("http://localhost:8080/" + link.getAttribute('@')).pathname,
+            const route = link.attributes.item(0).name,
+                path = new URL("http://localhost:8080/" + route.replace('.', '/') + '.js').pathname,
                 text = await loadSource(path),
                 host = document.createElement('host'), // never inserted — `this` binding only
                 f = wrapFunction(path, text, host)
 
             for (const attr of link.attributes) {
-                // '@' is routing metadata, already consumed above — and it isn't a
-                // valid XML Name, so setAttribute() throws on it in WebKit
-                if (attr.name == 'handled' || attr.name == '@') {
+                // the route is addressing, already consumed above
+                if (attr.name == 'handled' || attr.name == route) {
                     continue
                 }
 

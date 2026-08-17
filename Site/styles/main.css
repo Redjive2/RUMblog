@@ -84,7 +84,7 @@ em[post-date] {
 }
 
 /* templates, not content — must not paint before hydration reaches them */
-compute, page {
+call, page {
     display: none;
 }
 

@@ -1,7 +1,7 @@
 <div>
-    <compute @=scripts/rule.js target=MiniSET root>
+    <call scripts.rule target=MiniSET root>
         <strong style='color: rgb(178, 108, 118);'><em>MiniSET</em></strong>
-    </compute>
+    </call>
 </div>
 
 ## Overview
