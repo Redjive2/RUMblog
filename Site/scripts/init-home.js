@@ -15,7 +15,7 @@ const section = document.createElement('section'),
     hrb = document.createElement('hr'),
     skip = post => post.namespace != params.get('namespace')
 
-section.prepend(hra)
+section.append(hra)
 
 for (const post of index) {
     if (skip(post)) {
@@ -44,9 +44,9 @@ for (const post of index) {
     bottom.append(post.description)
     
     a.append(top, bottom)
-    section.prepend(a)
+    section.append(a)
 }
 
-section.prepend(hrb)
+section.append(hrb)
 
 return section

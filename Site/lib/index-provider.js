@@ -8,11 +8,28 @@ if (!postdata.public) {
     throw new Error("postdata.jsonc must define a 'public' namespace")
 }
 
-const data = []
+const data = [],
+    YEAR = 2,
+    MONTH = 0,
+    DAY = 1
+
+function isLatest(posts, post) {
+    for (const other of posts) {
+        if (other.date[YEAR] > post.date[YEAR]) {
+            return false
+        }
+        if (other.date[DAY] > post.date[DAY]) {
+            return false
+        }
+        if (other.date[DAY] > post.date[DAY]) {
+            return false
+        }
+    }
+
+    return true
+}
 
 for (const [namespace, posts] of Object.entries(postdata)) {
-    const ids = Object.keys(posts)
-
     for (const [id, info] of Object.entries(posts)) {
         data.push(Object.freeze({
             namespace,
@@ -21,7 +38,7 @@ for (const [namespace, posts] of Object.entries(postdata)) {
             date: info.date.join('/'),
             description: info.description,
             // insertion order is authoring order, so the last entry is newest
-            latest: id == ids[ids.length - 1],
+            latest: isLatest(Object.values(posts), info),
             // one owner for the posts/<namespace>/<id>.md layout
             path: `posts/${namespace}/${id}.md`,
         }))
