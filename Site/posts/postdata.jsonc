@@ -29,5 +29,11 @@
       "date": [8, 16, 26],
       "description": "Version 0.1",
     },
+
+    "vc-rules-default": {
+      "title": "Volatile Chalice — Knockout",
+      "date": [8, 19, 26],
+      "description": "Version 0.1",
+    },
   },
 }

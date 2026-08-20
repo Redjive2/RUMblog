@@ -159,7 +159,7 @@ async function hydrate() {
                 host.setAttribute(attr.name, attr.value)
                 host[attr.name] ??= attr.value
             }
-
+            
             host.append(...link.childNodes)
             host.observer = new MutationObserver(f)
             host.sourceParent = link.parentNode
@@ -172,6 +172,10 @@ async function hydrate() {
             }
 
             link.remove()
+
+            if (host.after != undefined) {
+                host.after()
+            }
         } finally {
             pending--
             queueMicrotask(checkDone)

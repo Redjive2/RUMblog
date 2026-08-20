@@ -25,7 +25,7 @@ function currentTheme() {
     // the live attribute first: it is what the toggle actually changes, and a
     // stale ?theme= would otherwise pin this to whatever the page loaded with
     return themeEl.getAttribute('data-theme') ??
-        params.get('theme') ??
+        sessionStorage.getItem('rumblog-prefers-theme') ??
         // parenthesised: ?: binds looser than ??, so without these the whole
         // chain becomes the condition and the result is always 'dark'
         (window.matchMedia('(prefers-color-scheme: dark)').matches

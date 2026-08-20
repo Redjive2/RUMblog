@@ -22,7 +22,7 @@ if (!params.has('namespace')) {
 // only session state survives a navigation. page state like ?post has to come
 // from the caller — carrying it forward means redirect('/') inherits the post
 // you are trying to leave and lands you back on the same URL
-const CARRIED = ['namespace', 'theme']
+const CARRIED = ['namespace']
 
 function redirect(path) {
     const url = new URL(path, location.origin),

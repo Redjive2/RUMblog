@@ -13,4 +13,22 @@ const markdown = await import(location.origin + '/lib/marked.esm.js'),
 
 article.append(header, ...contents.body.children)
 
+const hash = new URL(window.location.href).hash
+
+if (hash != '') {
+    this.after = function () {
+        for (const header of article.querySelectorAll('h1, h2, h3, h4, h5')) {
+            const headerPath = '#' + header.textContent
+                .toLowerCase()
+                .replaceAll(' ', '-')
+            
+            if (headerPath == hash) {
+                header.scrollIntoView()
+            }
+    
+            console.log(header.textContent, headerPath)
+        }
+    }
+}
+
 return article

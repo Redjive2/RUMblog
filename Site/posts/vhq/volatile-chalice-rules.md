@@ -44,7 +44,7 @@
 
 The Volatile Chalice is not an explode-only tournament. It is an MMT-like tournament with an emphasis on explode. Because of this, you can earn points with explode style, non-explode style, and by winning games.
 
-### Terminology
+### Terms
 
 Gameplay in RUMBLE is composed of a few parts:
 - **Round**: One fight. Both players start at twenty HP and win by reducing the opponent to zero HP first.
@@ -101,32 +101,41 @@ During the prelim period, matchups will be allowed to play any ruleset they like
 - The ruleset must not create ties.
 These rulesets are called deviant matches.
 
-If a matchup does not agree upon an approved ruleset by the deadline <small>(<code data-tooltip='This is the RUMBLE leaderboard reset time.'>19:00 UTC-5</code> on the third day of the current week)</small>, then a default ruleset will be assigned to the matchup. The default ruleset is as follows:
+If a matchup does not agree upon an approved ruleset by the deadline <small>(<code data-tooltip='This is the RUMBLE leaderboard reset time.'>19:00 UTC-5</code> on the third day of the current week)</small>, then a default ruleset will be assigned to the matchup. 
 
-<blockquote style='color: rgb(208, 90, 90); background-color: rgb(88, 50, 50);'>
-    TODO: get default mode from Assassinator
+<blockquote>
+    The default ruleset can be found <a href='?namespace=vhq&post=vc-rules-default'>here</a>. 
 </blockquote>
 
 #### Major period
 
-During the major period, matchups will play a simplified version of the [final period ruleset](#final-period) designed to minimize required judging. All rules listed here are modifications existing on top of the [final period ruleset](#final-period).
+During the major period, matchups will play a simplified version of the [final period ruleset](#final-period) designed to minimize required judging. Anywhere marked <mark>like so</mark> is modified.
 
-- Only one style judge will participate, but will assign five points.
-- The VC judge will only assign four points.
-- All style judges may participate as VC judges.
-- If a match is partially judged, the second <small>(incomplete)</small> judge's score will be projected from the first <small>(complete)</small> judge's score, rounded towards the lower-scoring player. <small>(Rounding will not affect the outcome of matches)</small>.
+- Competitors will play six games.
+  - Each game win counts for one point.
+  - Competitors may switch maps after each set, should they agree to. 
+    - If a competitor has won fewer games than the other after a given set, then they may decide to switch maps without agreement from their opponent.
+- If a competitor forfeits a match or is disqualified <small>(see [grounds for disqualification](#match-conduct))</small>, all points will be assigned to the other competitor.
+- <mark data-tooltip='Changed from: two (2)'>One</mark> style judge will split <mark data-tooltip='Changed from: three (3)'>five</mark> style points between the competitors by merit for general stylish gameplay <small>(including explode use)</small>.
+  - <mark>Style judges may serve as VC judges at their discretion.</mark>.
+- One VC judge will split <mark data-tooltip='Changed from: five (5)'>four</mark> explode points between the competitors by merit for explode use.
+  - VC judges may serve as style judges at their discretion.
+- Each judge will assign one point per set and any remaining point(s) for overall performance at the end.
+- Judges may participate live or participate via vod review.
+  - <small>To make judges' lives easier, competitors are expected to follow the rules listed under the [vod format ruleset](#match-conduct) precisely.</small>
+- <mark>If a match is partially judged, the second <small>(incomplete)</small> judge's score will be projected from the first <small>(complete)</small> judge's score, rounded towards the lower-scoring player. <small>(Rounding will not affect the outcome of matches)</small></mark>.
 
 #### Final period
 
 - Competitors will play six games.
-  - Each game win counts for one (1) point.
+  - Each game win counts for one point.
   - Competitors may switch maps after each set, should they agree to. 
     - If a competitor has won fewer games than the other after a given set, then they may decide to switch maps without agreement from their opponent.
 - If a competitor forfeits a match or is disqualified <small>(see [grounds for disqualification](#match-conduct))</small>, all points will be assigned to the other competitor.
 - Two style judges will each split three style points between the competitors by merit for general stylish gameplay <small>(including explode use)</small>.
 - One VC judge will split five explode points between the competitors by merit for explode use.
   - VC judges may serve as style judges at their discretion.
-- Each judge will assign one point per set and their remaining point(s) for overall performance.
+- Each judge will assign one point per set and any remaining point(s) for overall performance at the end.
 - Judges may participate live or participate via vod review.
   - <small>To make judges' lives easier, competitors are expected to follow the rules listed under the [vod format ruleset](#match-conduct) precisely.</small>
 
